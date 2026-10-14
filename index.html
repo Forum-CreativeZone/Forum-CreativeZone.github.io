@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>CREATIVE ZONE ~ terminal interativo</title>
-<meta name="description" content="Terminal interativo do Miguel (Fórum-Zona Criativa): contribuições, projetos e links, direto do GitHub.">
+<title>CREATIVE ZONE ~ terminal do Miguel</title>
+<meta name="description" content="Terminal interativo do Miguel, desenvolvedor full stack e fundador da Creative Zone: projetos, contribuições, stack e links.">
 <meta property="og:title" content="CREATIVE ZONE ~ terminal interativo">
 <meta property="og:description" content="Digite help e explore: contribuições, projetos, links e um modo matrix.">
 <meta name="theme-color" content="#0d1117">
@@ -120,8 +120,9 @@ a{color:var(--cyan);text-decoration:none} a:hover{text-decoration:underline}
 
 <div class="hints">
   digite <button class="chip" data-run="help">help</button> para ver os comandos · experimente
-  <button class="chip" data-run="contributions">contributions</button>,
   <button class="chip" data-run="projects">projects</button>,
+  <button class="chip" data-run="creativezone">creativezone</button>,
+  <button class="chip" data-run="contributions">contributions</button>,
   <button class="chip" data-run="portrait">portrait</button> ou
   <button class="chip" data-run="matrix">matrix</button>
 </div>
@@ -131,25 +132,27 @@ a{color:var(--cyan);text-decoration:none} a:hover{text-decoration:underline}
 <div id="matrix" aria-hidden="true"><canvas></canvas><div class="hero"><pre id="mhero"></pre></div><div class="msg">pressione qualquer tecla ou toque para sair</div></div>
 
 <script>
-/* ================== CONFIG: edite aqui ================== */
+/* ================== CONTEÚDO ==================
+   Textos, projetos, stack e links vêm de content/profile.json no repositório do perfil
+   (a mesma fonte do README). A cópia embutida abaixo é usada se o GitHub não responder. */
+const RAW = "https://raw.githubusercontent.com/Forum-CreativeZone/Forum-CreativeZone/main";
+let PROFILE = {"_leia": "Fonte de todo o conteúdo do README. Edite aqui e faça commit: o GitHub Actions regenera README.md e os SVGs sozinho.", "login": "Forum-CreativeZone", "name": "Miguel", "prompt_user": "miguel@creativezone", "role": "Desenvolvedor Full Stack", "founder_of": "Fundador da Creative Zone", "typing": ["Desenvolvedor Full Stack", "Fundador da Creative Zone", "Servidores MCP que dão ferramentas reais para IAs", "SaaS do banco de dados ao app mobile"], "about": {"paragraphs": ["Construo produtos de ponta a ponta: do Postgres com RLS ao app Android, passando por servidores MCP que deixam a IA criar, testar e operar software de verdade.", "Fundei a Creative Zone, organização e comunidade onde uma discussão vira ideia e uma ideia vira projeto, reunindo gente de áreas diferentes para construir junto."], "facts": [["foco", "SaaS · IA e MCP · comunidade"], ["front", "React · TypeScript · TanStack · Tailwind"], ["back", "Node.js · Supabase · PostgreSQL · Deno"], ["infra", "Cloudflare · Docker · Caddy · GitHub Actions"], ["agora", "Creative Lovable 1.0 · Linkou · Meu Salão"]]}, "projects": [{"slug": "creative-lovable", "name": "Creative Lovable", "repo": "Forum-CreativeZone/CreativeLovable", "url": "https://github.com/Forum-CreativeZone/CreativeLovable", "visibility": "público", "badge": "MIT · v1.0.0", "tagline": "Laboratório de criação para IAs via MCP: a IA cria, roda, vê os erros e entrega.", "highlights": ["22 ferramentas MCP via stdio e Streamable HTTP", "Preview ao vivo, erros com arquivo e linha, versões", "Checagem de JS/JSX (Acorn) e captura via Playwright", "Sandbox, comandos sem shell e anti DNS rebinding"], "tech": ["Node.js", "MCP SDK", "Zod", "Playwright", "JSZip"]}, {"slug": "creativezone", "name": "CreativeZone", "repo": "Forum-CreativeZone/CreativeZone", "url": "https://forum.creativezone.pro/", "visibility": "público", "badge": "forum.creativezone.pro", "tagline": "Fórum e plataforma da comunidade: discussões que viram projetos.", "highlights": ["Chat realtime com presença, moderação e anti-flood", "DevHub com GitHub App e Security Score via OSV.dev", "Link preview próprio com cache e proteção SSRF", "113 migrations com RLS, 14 Edge Functions e PWA"], "tech": ["React 19", "Vite", "Supabase", "Postgres", "Cloudflare", "Resend"]}, {"slug": "meu-salao", "name": "Meu Salão", "repo": "Forum-CreativeZone/Lolla-Salao", "url": "https://crm.lollahair.com/", "visibility": "privado", "badge": "beta operacional", "tagline": "SaaS vertical multi-salão para gerir salões de beleza na web e no celular.", "highlights": ["Agenda drag-and-drop, comandas, sinal PIX, comissões", "Multi-tenant isolado por salão, auditoria e backups", "Painel admin com feature flags e kill switches", "Android/iOS com Capacitor e assinaturas RevenueCat"], "tech": ["TypeScript", "TanStack", "Supabase", "Capacitor", "Tailwind"]}, {"slug": "linkou", "name": "Linkou", "repo": "Forum-CreativeZone/linkou-agent-mcp-remote", "url": "", "visibility": "privado", "badge": "monorepo pnpm", "tagline": "Sua IA operando sua infraestrutura: MCP remoto para PCs, servidores e VPS.", "highlights": ["Gateway MCP + WebSocket e agentes Windows/Linux", "Tiers de segurança, RBAC, aprovação e auditoria", "Terminal remoto, workflows e ponte OpenAPI p/ GPTs", "Instalador de 1 linha, vault AES-256, Docker + Caddy"], "tech": ["TypeScript", "MCP SDK", "WebSocket", "Postgres", "TanStack", "Docker"]}], "stack": [["frontend", ["react", "typescript", "javascript", "vite", "tanstack", "tailwindcss", "shadcnui", "radixui"]], ["backend", ["nodedotjs", "supabase", "postgresql", "deno", "zod", "resend"]], ["infra", ["cloudflare", "docker", "caddy", "githubactions", "pnpm", "linux", "git"]], ["ia_mobile", ["modelcontextprotocol", "claude", "capacitor", "android"]], ["testes", ["vitest", "text:Playwright"]]], "community": {"name": "Creative Zone", "subtitle": "Comunidade Creative Lab", "role": "Fundador", "description": "Comunidade de tecnologia, software, automação, IA, infraestrutura, hardware e games, feita para ir além do fórum: uma discussão vira ideia, a ideia vira projeto e o projeto reúne membros de áreas diferentes.", "features": ["fórum", "chat em tempo real", "projetos colaborativos", "DevHub + GitHub", "Security Score"], "forum": "https://forum.creativezone.pro/", "org": "https://github.com/Creatiive-Zone"}, "links": {"linkedin": "https://www.linkedin.com/in/miguel017/", "linkedin_label": "miguel017", "instagram": "https://www.instagram.com/ofc.quiroz/", "instagram_label": "ofc.quiroz", "email": "gestao.quiroz@gmail.com", "terminal": "https://forum-creativezone.github.io"}};
 const CONFIG = {
   login: "Forum-CreativeZone",          // usuário do GitHub
   user: "miguel", host: "creativezone", // prompt: miguel@creativezone
-  name: "Miguel",
-  tagline: ["Desenvolvimento", "Design", "Criatividade", "Fórum-Zona Criativa"],
-  whoami: [
-    ["b", "Miguel · Fórum-Zona Criativa"],
-    ["mu", "Código, design e ideias saindo do papel."],
-    // linhas automáticas do GitHub (bio, repositórios, desde quando) entram logo abaixo
-  ],
-  links: {
-    github:    "https://github.com/Forum-CreativeZone",
-    linkedin:  "https://www.linkedin.com/in/miguel017/",
-    instagram: "https://www.instagram.com/ofc.quiroz/",
-    email:     "gestao.quiroz@gmail.com",
-  },
-  statsUrl: "https://raw.githubusercontent.com/Forum-CreativeZone/Forum-CreativeZone/main/stats.json",
+  statsUrl: RAW + "/stats.json",
+  profileUrl: RAW + "/content/profile.json",
 };
+function applyProfile(p) {
+  PROFILE = p;
+  CONFIG.name = p.name;
+  CONFIG.tagline = [p.role, p.founder_of];
+  CONFIG.links = {
+    github: "https://github.com/" + p.login, linkedin: p.links.linkedin, instagram: p.links.instagram,
+    email: p.links.email, forum: p.community.forum, org: p.community.org,
+  };
+}
+applyProfile(PROFILE);
 /* ======================================================== */
 
 const BANNER = "   __________  _________  ___________    ________   _____   ____  _   ________\n  / ____/ __ \\/ ____/   |/_  __/  _/ |  / / ____/  /__  /  / __ \\/ | / / ____/\n / /   / /_/ / __/ / /| | / /  / / | | / / __/       / /  / / / /  |/ / __/\n/ /___/ _, _/ /___/ ___ |/ / _/ /  | |/ / /___      / /__/ /_/ / /|  / /___\n\\____/_/ |_/_____/_/  |_/_/ /___/  |___/_____/     /____/\\____/_/ |_/_____/";
@@ -166,17 +169,22 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 /* ---------- header ---------- */
 $("#banner").innerHTML = BANNER.split("\n").map((l,i) => `<span style="animation-delay:${i*70}ms">${esc(l) || " "}</span>`).join("");
-$("#tagline").innerHTML = CONFIG.tagline.map(t => `<b>${esc(t)}</b>`).join(" · ");
+function renderTagline() { $("#tagline").innerHTML = CONFIG.tagline.map(t => `<b>${esc(t)}</b>`).join(" · "); }
+renderTagline();
 $("#wtitle").textContent = `${PS}: ~`;
 $("#ps").innerHTML = `${PS}<span class="mu">:</span><span class="path">~</span><span class="mu">$</span>`;
 $("#mhero").textContent = BANNER;
-const L = CONFIG.links;
-$("#links").innerHTML = [
-  `<a href="${L.github}" target="_blank" rel="noopener">github</a>`,
-  `<a href="${L.linkedin}" target="_blank" rel="noopener">linkedin</a>`,
-  `<a href="${L.instagram}" target="_blank" rel="noopener">instagram</a>`,
-  L.email ? `<a href="mailto:${L.email}">email</a>` : ""
-].filter(Boolean).join(' <span class="sep">·</span> ');
+function renderLinks() {
+  const L = CONFIG.links;
+  $("#links").innerHTML = [
+    `<a href="${L.github}" target="_blank" rel="noopener">github</a>`,
+    `<a href="${L.forum}" target="_blank" rel="noopener">creative zone</a>`,
+    `<a href="${L.linkedin}" target="_blank" rel="noopener">linkedin</a>`,
+    `<a href="${L.instagram}" target="_blank" rel="noopener">instagram</a>`,
+    L.email ? `<a href="mailto:${L.email}">email</a>` : ""
+  ].filter(Boolean).join(' <span class="sep">·</span> ');
+}
+renderLinks();
 
 /* ---------- output helpers ---------- */
 function line(html = "", cls = "") { const d = document.createElement("div"); d.className = "ln " + cls; d.innerHTML = html; out.appendChild(d); scrollDown(); return d; }
@@ -228,14 +236,17 @@ const COMMANDS = {
     line(`atalhos: <span class="cy">Tab</span> completa · <span class="cy">↑ ↓</span> histórico · <span class="cy">Ctrl+L</span> limpa`, "di");
   }},
   whoami: { d: "quem sou eu", async run() {
-    for (const [cls, t] of CONFIG.whoami) line(esc(t), cls);
+    const p = PROFILE;
+    line(esc(p.name), "b");
+    line(`<span class="ok" style="font-weight:700">${esc(p.role)}</span>`);
+    line(esc(p.founder_of), "mu");
+    line("");
+    p.about.paragraphs.forEach(t => line(esc(t), "mu"));
+    block(`<div class="help" style="margin-top:8px">${p.about.facts.map(([k, v]) => `<span class="c">${esc(k)}</span><span class="d">${esc(v)}</span>`).join("")}</div>`);
     const u = await loadUser();
     if (u) {
-      if (u.bio) line(esc(u.bio), "mu");
       const since = u.created_at ? `${MESES[+u.created_at.slice(5,7)-1]}/${u.created_at.slice(0,4)}` : "";
-      line(`No GitHub desde ${since} · ${u.public_repos} repositórios públicos · ${u.followers} seguidores`, "mu");
-      const bits = [u.location && `📍 ${u.location}`, u.company && `🏢 ${u.company}`].filter(Boolean);
-      if (bits.length) line(esc(bits.join("  ·  ")), "mu");
+      line(`No GitHub desde ${since} · ${u.public_repos} repositórios públicos · ${u.followers} seguidores`, "di");
     }
   }},
   contributions: { d: "gráfico de contribuições do último ano", aliases: ["contribuicoes", "contrib", "graph"], async run() {
@@ -266,18 +277,46 @@ const COMMANDS = {
     const g = new Date(st.generated_at);
     line(`atualizado em ${g.toLocaleString("pt-BR")}`, "di");
   }},
-  projects: { d: "meus repositórios públicos", aliases: ["projetos", "repos"], async run() {
+  projects: { d: "projetos em destaque", aliases: ["projetos"], run() {
+    PROFILE.projects.forEach(pj => {
+      const priv = pj.visibility.startsWith("priv");
+      const title = pj.url ? `<a href="${pj.url}" target="_blank" rel="noopener" class="b">${esc(pj.name)}</a>` : `<span class="b">${esc(pj.name)}</span>`;
+      block(`<div class="proj"><div class="t">${title}<span class="${priv ? "di" : "ok"}">${esc(pj.visibility)}</span><span class="di">${esc(pj.badge)}</span></div>
+        <div style="color:#c9d1d9">${esc(pj.tagline)}</div>
+        ${pj.highlights.map(h => `<div class="mu"><span class="ok">›</span> ${esc(h)}</div>`).join("")}
+        <div style="margin-top:6px">${pj.tech.map(t => `<span class="chip" style="cursor:default">${esc(t)}</span>`).join(" ")}</div></div>`);
+    });
+    line(`digite <span class="ok">repos</span> para ver todos os repositórios públicos`, "di");
+  }},
+  repos: { d: "todos os repositórios públicos", async run() {
     const l = line("buscando repositórios…", "di");
     try {
-      const repos = (await loadRepos()).filter(r => !r.name.toLowerCase().endsWith(".github.io"));
+      const repos = (await loadRepos()).filter(r => !r.name.toLowerCase().endsWith(".github.io") && r.name.toLowerCase() !== CONFIG.login.toLowerCase());
       l.remove();
       if (!repos.length) return line("nenhum repositório público ainda.", "mu");
       repos.forEach(r => block(`<div class="proj"><div class="t"><a href="${r.html_url}" target="_blank" rel="noopener" class="b">${esc(r.name)}</a>${r.fork ? '<span class="di">fork</span>' : ""}${r.language ? `<span class="lang" style="--lc:${LANG_COLORS[r.language] || "#8b949e"}">${esc(r.language)}</span>` : ""}<span class="ye">★ ${r.stargazers_count}</span><span class="di">atualizado ${new Date(r.pushed_at || r.updated_at).toLocaleDateString("pt-BR")}</span></div>${r.description ? `<div class="mu">${esc(r.description)}</div>` : ""}</div>`));
       line(`${repos.length} repositórios · <a href="${CONFIG.links.github}?tab=repositories" target="_blank" rel="noopener">ver todos no GitHub</a>`, "di");
     } catch (e) { l.className = "ln er"; l.textContent = "a API do GitHub não respondeu agora (limite por hora), tente mais tarde."; }
   }},
+  creativezone: { d: "a comunidade que eu fundei", aliases: ["cz", "comunidade", "community"], run() {
+    const c = PROFILE.community;
+    block(`<pre class="ok" style="margin:4px 0;line-height:1.2;color:#ff4d4d">${esc("  ___ ____\n / __|_  /\n| (__ / / \n \\___/___|")}</pre>`);
+    line(`<span class="b">${esc(c.name)}</span> <span class="mu">· ${esc(c.subtitle)} · </span><span style="color:#ff4d4d">${esc(c.role)}</span>`);
+    line(esc(c.description), "mu");
+    line(c.features.map(f => `<span class="chip" style="cursor:default;border-color:#ff4d4d88">${esc(f)}</span>`).join(" "));
+    line(`<span style="color:#ff4d4d">›</span> <a href="${c.forum}" target="_blank" rel="noopener">${c.forum.replace("https://", "").replace(/\/$/, "")}</a>   <span style="color:#ff4d4d">›</span> <a href="${c.org}" target="_blank" rel="noopener">${c.org.replace("https://", "")}</a>`);
+  }},
+  stack: { d: "tecnologias que eu uso", run() {
+    const label = {frontend: "frontend", backend: "backend", infra: "infra", ia_mobile: "ia+mobile", testes: "testes"};
+    const NAMES = {react: "React", typescript: "TypeScript", javascript: "JavaScript", vite: "Vite", tanstack: "TanStack", tailwindcss: "Tailwind CSS",
+      shadcnui: "shadcn/ui", radixui: "Radix UI", nodedotjs: "Node.js", supabase: "Supabase", postgresql: "PostgreSQL", deno: "Deno", zod: "Zod",
+      resend: "Resend", cloudflare: "Cloudflare", docker: "Docker", caddy: "Caddy", githubactions: "GitHub Actions", pnpm: "pnpm", linux: "Linux",
+      git: "Git", modelcontextprotocol: "MCP", claude: "Claude", capacitor: "Capacitor", android: "Android", vitest: "Vitest"};
+    const nice = s => s.startsWith("text:") ? s.slice(5) : (NAMES[s] || s);
+    block(`<div class="help">${PROFILE.stack.map(([g, items]) => `<span class="c">${esc(label[g] || g)}</span><span class="d">${items.map(nice).map(esc).join(" · ")}</span>`).join("")}</div>`);
+  }},
   portrait: { d: "meu retrato em ASCII", aliases: ["foto", "retrato"], run() {
-    block(`<img class="portrait" src="miguel-ascii.svg" alt="Retrato ASCII do ${esc(CONFIG.name)}">`);
+    block(`<img class="portrait" src="miguel-ascii.svg" alt="Retrato ASCII do ${esc(CONFIG.name)} gravado a laser">`);
   }},
   social: { d: "todos os meus links", aliases: ["links", "contato", "contact"], run() {
     const L = CONFIG.links;
@@ -285,9 +324,12 @@ const COMMANDS = {
       <span class="c">github</span><a href="${L.github}" target="_blank" rel="noopener">${L.github.replace("https://","")}</a>
       <span class="c">linkedin</span><a href="${L.linkedin}" target="_blank" rel="noopener">${L.linkedin.replace("https://www.","")}</a>
       <span class="c">instagram</span><a href="${L.instagram}" target="_blank" rel="noopener">@${L.instagram.split("/").filter(Boolean).pop()}</a>
-      ${L.email ? `<span class="c">email</span><a href="mailto:${L.email}">${L.email}</a>` : ""}</div>`);
+      ${L.email ? `<span class="c">email</span><a href="mailto:${L.email}">${L.email}</a>` : ""}
+      <span class="c">fórum</span><a href="${L.forum}" target="_blank" rel="noopener">${L.forum.replace("https://", "").replace(/\/$/, "")}</a>
+      <span class="c">organização</span><a href="${L.org}" target="_blank" rel="noopener">${L.org.replace("https://", "")}</a></div>`);
   }},
   github: { d: "abre meu GitHub", run() { openLink(CONFIG.links.github); } },
+  forum: { d: "abre o fórum da Creative Zone", aliases: ["forum"], hidden: false, run() { openLink(CONFIG.links.forum); } },
   linkedin: { d: "abre meu LinkedIn", run() { openLink(CONFIG.links.linkedin); } },
   instagram: { d: "abre meu Instagram", run() { openLink(CONFIG.links.instagram); } },
   email: { d: "meu e-mail", run() { line(`<a href="mailto:${CONFIG.links.email}">${CONFIG.links.email}</a>`); } },
@@ -394,6 +436,11 @@ function startMatrix() {
 (async () => {
   input.disabled = true;
   await sleep(650);
+  try {
+    const ctl = new AbortController(); setTimeout(() => ctl.abort(), 3500);
+    const r = await fetch(`${CONFIG.profileUrl}?t=${Math.floor(Date.now() / 36e5)}`, { cache: "no-store", signal: ctl.signal });
+    if (r.ok) { applyProfile(await r.json()); renderTagline(); renderLinks(); }
+  } catch (e) { /* usa a cópia embutida */ }
   await typeLine(`conectado a github.com/${CONFIG.login}`, "ok", 12);
   line(`digite 'help' para ver os comandos disponíveis`, "mu");
   const st = await loadStats();
