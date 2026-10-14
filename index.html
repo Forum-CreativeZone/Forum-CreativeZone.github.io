@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CREATIVE ZONE ~ terminal interativo</title>
+<meta name="description" content="Terminal interativo do Miguel (Fórum-Zona Criativa): contribuições, projetos e links, direto do GitHub.">
+<meta property="og:title" content="CREATIVE ZONE ~ terminal interativo">
+<meta property="og:description" content="Digite help e explore: contribuições, projetos, links e um modo matrix.">
+<meta name="theme-color" content="#0d1117">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230d1117'/%3E%3Cpath d='M16 22l12 10-12 10' stroke='%2339d353' stroke-width='6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Crect x='32' y='40' width='16' height='5' rx='2' fill='%2339d353'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d1117; --panel:#161b22; --panel2:#11161d; --border:#30363d; --text:#e6edf3; --muted:#8b949e; --dim:#6e7681;
+  --green:#39d353; --green2:#26a641; --cyan:#22d3ee; --yellow:#e3b341; --red:#ff7b72; --purple:#d2a8ff;
+  --l0:#161b22; --l1:#0e4429; --l2:#006d32; --l3:#26a641; --l4:#39d353;
+  --mono:'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:var(--mono);font-size:14px;line-height:1.55}
+body{min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:28px 16px 40px;overflow-x:hidden}
+a{color:var(--cyan);text-decoration:none} a:hover{text-decoration:underline}
+::selection{background:#26a64155}
+
+/* banner */
+.banner{margin:6px 0 2px;color:var(--green);white-space:pre;font-weight:700;line-height:1.22;
+  font-size:min(14px, calc((100vw - 32px) / 79 / .6));text-shadow:0 0 12px #39d35340}
+.banner span{display:block;opacity:0;transform:translateY(-4px);animation:drop .5s ease-out forwards}
+@keyframes drop{to{opacity:1;transform:none}}
+.tagline{color:var(--muted);margin:8px 0 22px;text-align:center;font-size:13px;opacity:0;animation:drop .6s .45s ease-out forwards}
+.tagline b{color:#c9d1d9;font-weight:400}
+
+/* window */
+.term{width:100%;max-width:900px;border:1px solid var(--border);border-radius:10px;background:var(--bg);
+  box-shadow:0 20px 60px #0008, 0 0 0 1px #ffffff05 inset;overflow:hidden}
+.bar{display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--panel);border-bottom:1px solid var(--border);position:relative}
+.dot{width:12px;height:12px;border-radius:50%} .r{background:#ff5f57}.y{background:#febc2e}.g{background:#28c840}
+.bar .title{position:absolute;left:0;right:0;text-align:center;color:var(--muted);font-size:12px;pointer-events:none}
+.screen{padding:18px 18px 14px;min-height:420px;max-height:min(72vh,760px);overflow-y:auto;scroll-behavior:smooth}
+.screen::-webkit-scrollbar{width:10px}.screen::-webkit-scrollbar-thumb{background:#30363d;border-radius:8px;border:3px solid var(--bg)}
+
+.ln{white-space:pre-wrap;word-break:break-word;min-height:1.55em}
+.ok{color:var(--green)} .mu{color:var(--muted)} .di{color:var(--dim)} .cy{color:var(--cyan)} .ye{color:var(--yellow)}
+.er{color:var(--red)} .pu{color:var(--purple)} .b{font-weight:700;color:var(--text)}
+.ps{color:var(--green)} .ps .path{color:var(--cyan)}
+
+/* stat cards */
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:22px 0 26px}
+.card{border:1px solid var(--border);background:var(--panel);border-radius:8px;padding:14px 14px 12px;opacity:0;animation:drop .5s ease-out forwards}
+.card .n{font-size:24px;font-weight:700;color:var(--green);letter-spacing:.5px}
+.card .k{font-size:10.5px;color:var(--muted);letter-spacing:1.2px;text-transform:uppercase;margin-top:4px}
+@media (max-width:640px){.cards{grid-template-columns:repeat(2,1fr)}.screen{min-height:360px}}
+
+/* prompt */
+.input-line{display:flex;align-items:center;gap:8px;margin-top:6px}
+.input-line input{flex:1;min-width:0;background:transparent;border:0;outline:0;color:var(--text);font:inherit;caret-color:var(--green);padding:0}
+.blk{width:9px;height:17px;background:var(--green);animation:blink 1.05s steps(1) infinite;margin-left:auto;border-radius:1px}
+@keyframes blink{50%{opacity:0}}
+
+/* help table */
+.help{display:grid;grid-template-columns:minmax(130px,auto) 1fr;column-gap:22px;row-gap:2px;margin:4px 0 8px}
+.help .c{color:var(--green)} .help .d{color:var(--muted)}
+
+/* heatmap in terminal */
+.hm-wrap{overflow-x:auto;padding:8px 0 4px}
+.hm{display:grid;grid-auto-flow:column;grid-template-rows:repeat(7,11px);gap:3px;width:max-content}
+.hm i{width:11px;height:11px;border-radius:2px;background:var(--l0);outline:1px solid #ffffff08;opacity:0;animation:pop .35s ease-out forwards}
+.hm i.l1{background:var(--l1)}.hm i.l2{background:var(--l2)}.hm i.l3{background:var(--l3)}.hm i.l4{background:var(--l4)}
+.hm i.no{visibility:hidden}
+@keyframes pop{from{opacity:0;transform:scale(.3)}to{opacity:1;transform:none}}
+
+/* projects */
+.proj{border-left:2px solid var(--border);padding:2px 0 2px 12px;margin:6px 0 10px}
+.proj .t{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline}
+.lang{display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-size:12px}
+.lang:before{content:"";width:9px;height:9px;border-radius:50%;background:var(--lc,#8b949e)}
+
+.portrait{max-width:min(420px,100%);border-radius:10px;display:block;margin:8px 0}
+.nf{display:flex;gap:26px;flex-wrap:wrap;align-items:flex-start}
+.nf pre{margin:0;color:var(--green);line-height:1.25}
+
+/* footer */
+.hints{margin-top:16px;color:var(--muted);font-size:12.5px;text-align:center;line-height:2.1}
+.chip{display:inline-block;border:1px solid var(--border);background:var(--panel);color:var(--text);border-radius:5px;padding:0 7px;margin:0 2px;cursor:pointer;font:inherit;font-size:12px}
+.chip:hover{border-color:var(--green);color:var(--green)}
+.links{margin-top:18px;font-size:12.5px;text-align:center}
+.links a{margin:0 4px}
+.links .sep{color:var(--dim)}
+.fine{margin-top:8px;color:var(--dim);font-size:11.5px;text-align:center}
+
+/* matrix */
+#matrix{position:fixed;inset:0;z-index:50;display:none;background:#000}
+#matrix canvas{width:100%;height:100%;display:block}
+#matrix .msg{position:absolute;left:0;right:0;bottom:22px;text-align:center;color:#39d35399;font-size:12px}
+#matrix .hero{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
+#matrix .hero pre{color:#d9ffe0;text-shadow:0 0 18px #39d353,0 0 4px #39d353;font-weight:700;margin:0;line-height:1.22;
+  font-size:min(16px, calc((100vw - 32px) / 79 / .6));background:#000c;padding:16px 18px;border-radius:10px;opacity:0;animation:drop 1.2s 1.2s forwards}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-delay:0s!important}}
+</style>
+</head>
+<body>
+
+<pre class="banner" id="banner" aria-label="CREATIVE ZONE"></pre>
+<div class="tagline" id="tagline"></div>
+
+<main class="term" id="term" aria-label="terminal interativo">
+  <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="title" id="wtitle"></span></div>
+  <div class="screen" id="screen">
+    <div id="out"></div>
+    <div class="input-line">
+      <span class="ps" id="ps"></span>
+      <input id="cmd" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="comando">
+      <span class="blk"></span>
+    </div>
+  </div>
+</main>
+
+<div class="hints">
+  digite <button class="chip" data-run="help">help</button> para ver os comandos · experimente
+  <button class="chip" data-run="contributions">contributions</button>,
+  <button class="chip" data-run="projects">projects</button>,
+  <button class="chip" data-run="portrait">portrait</button> ou
+  <button class="chip" data-run="matrix">matrix</button>
+</div>
+<div class="links" id="links"></div>
+<div class="fine">renderizado no navegador, sem build · dados atualizados diariamente</div>
+
+<div id="matrix" aria-hidden="true"><canvas></canvas><div class="hero"><pre id="mhero"></pre></div><div class="msg">pressione qualquer tecla ou toque para sair</div></div>
+
+<script>
+/* ================== CONFIG: edite aqui ================== */
+const CONFIG = {
+  login: "Forum-CreativeZone",          // usuário do GitHub
+  user: "miguel", host: "creativezone", // prompt: miguel@creativezone
+  name: "Miguel",
+  tagline: ["Desenvolvimento", "Design", "Criatividade", "Fórum-Zona Criativa"],
+  whoami: [
+    ["b", "Miguel · Fórum-Zona Criativa"],
+    ["mu", "Código, design e ideias saindo do papel."],
+    // linhas automáticas do GitHub (bio, repositórios, desde quando) entram logo abaixo
+  ],
+  links: {
+    github:    "https://github.com/Forum-CreativeZone",
+    linkedin:  "https://www.linkedin.com/in/miguel017/",
+    instagram: "https://www.instagram.com/ofc.quiroz/",
+    email:     "gestao.quiroz@gmail.com",
+  },
+  statsUrl: "https://raw.githubusercontent.com/Forum-CreativeZone/Forum-CreativeZone/main/stats.json",
+};
+/* ======================================================== */
+
+const BANNER = "   __________  _________  ___________    ________   _____   ____  _   ________\n  / ____/ __ \\/ ____/   |/_  __/  _/ |  / / ____/  /__  /  / __ \\/ | / / ____/\n / /   / /_/ / __/ / /| | / /  / / | | / / __/       / /  / / / /  |/ / __/\n/ /___/ _, _/ /___/ ___ |/ / _/ /  | |/ / /___      / /__/ /_/ / /|  / /___\n\\____/_/ |_/_____/_/  |_/_/ /___/  |___/_____/     /____/\\____/_/ |_/_____/";
+const $ = s => document.querySelector(s);
+const out = $("#out"), input = $("#cmd"), screen = $("#screen");
+const PS = `${CONFIG.user}@${CONFIG.host}`;
+const MESES = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
+const LANG_COLORS = {JavaScript:"#f1e05a",TypeScript:"#3178c6",Python:"#3572A5",HTML:"#e34c26",CSS:"#663399",PHP:"#4F5D95",Java:"#b07219",Dart:"#00B4AB",Kotlin:"#A97BFF",Shell:"#89e051","C#":"#178600",Vue:"#41b883",Go:"#00ADD8"};
+const state = { stats: null, user: null, repos: null, history: [], hidx: 0 };
+const fmt = n => Number(n || 0).toLocaleString("pt-BR");
+const brDate = s => { if (!s) return "-"; const [y,m,d] = s.split("-").map(Number); return `${d} ${MESES[m-1]}`; };
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+/* ---------- header ---------- */
+$("#banner").innerHTML = BANNER.split("\n").map((l,i) => `<span style="animation-delay:${i*70}ms">${esc(l) || " "}</span>`).join("");
+$("#tagline").innerHTML = CONFIG.tagline.map(t => `<b>${esc(t)}</b>`).join(" · ");
+$("#wtitle").textContent = `${PS}: ~`;
+$("#ps").innerHTML = `${PS}<span class="mu">:</span><span class="path">~</span><span class="mu">$</span>`;
+$("#mhero").textContent = BANNER;
+const L = CONFIG.links;
+$("#links").innerHTML = [
+  `<a href="${L.github}" target="_blank" rel="noopener">github</a>`,
+  `<a href="${L.linkedin}" target="_blank" rel="noopener">linkedin</a>`,
+  `<a href="${L.instagram}" target="_blank" rel="noopener">instagram</a>`,
+  L.email ? `<a href="mailto:${L.email}">email</a>` : ""
+].filter(Boolean).join(' <span class="sep">·</span> ');
+
+/* ---------- output helpers ---------- */
+function line(html = "", cls = "") { const d = document.createElement("div"); d.className = "ln " + cls; d.innerHTML = html; out.appendChild(d); scrollDown(); return d; }
+function block(html) { const d = document.createElement("div"); d.innerHTML = html; out.appendChild(d); scrollDown(); return d; }
+function scrollDown() { screen.scrollTop = screen.scrollHeight; }
+function echoCmd(c) { line(`<span class="ps">${PS}<span class="mu">:</span><span class="path">~</span><span class="mu">$</span></span> <span class="b">${esc(c)}</span>`); }
+async function typeLine(text, cls = "", speed = 14) { const d = line("", cls); for (const ch of text) { d.textContent += ch; await sleep(speed); } return d; }
+
+/* ---------- data ---------- */
+async function getJSON(url) { const r = await fetch(url, { cache: "no-store" }); if (!r.ok) throw new Error(r.status); return r.json(); }
+async function loadStats() {
+  if (state.stats) return state.stats;
+  try { state.stats = await getJSON(`${CONFIG.statsUrl}?t=${Math.floor(Date.now() / 36e5)}`); } catch (e) { state.stats = null; }
+  return state.stats;
+}
+async function loadUser() {
+  if (state.user) return state.user;
+  try { state.user = await getJSON(`https://api.github.com/users/${CONFIG.login}`); } catch (e) { state.user = null; }
+  return state.user;
+}
+async function loadRepos() {
+  if (state.repos) return state.repos;
+  state.repos = await getJSON(`https://api.github.com/users/${CONFIG.login}/repos?sort=updated&per_page=100`);
+  return state.repos;
+}
+
+/* ---------- stat cards ---------- */
+function countUp(el, to, ms = 1100) {
+  const t0 = performance.now();
+  const tick = t => { const p = Math.min(1, (t - t0) / ms); const e = 1 - Math.pow(1 - p, 3); el.textContent = fmt(Math.round(to * e)); if (p < 1) requestAnimationFrame(tick); };
+  requestAnimationFrame(tick);
+}
+function renderCards(st) {
+  const items = [
+    [st ? st.total : 0, "contribuições"],
+    [st ? st.current_streak.days : 0, "dias de sequência"],
+    [st ? st.longest_streak.days : 0, "melhor sequência"],
+    [st ? st.best_day.count : 0, "em um dia"],
+  ];
+  const wrap = block(`<div class="cards">${items.map((it, i) => `<div class="card" style="animation-delay:${i*90}ms"><div class="n">0</div><div class="k">${it[1]}</div></div>`).join("")}</div>`);
+  wrap.querySelectorAll(".n").forEach((el, i) => setTimeout(() => countUp(el, items[i][0]), 150 + i * 90));
+}
+
+/* ---------- commands ---------- */
+const COMMANDS = {
+  help: { d: "lista os comandos", run() {
+    const rows = Object.entries(COMMANDS).filter(([, c]) => !c.hidden).map(([k, c]) => `<span class="c">${k}</span><span class="d">${c.d}</span>`).join("");
+    block(`<div class="help">${rows}</div>`);
+    line(`atalhos: <span class="cy">Tab</span> completa · <span class="cy">↑ ↓</span> histórico · <span class="cy">Ctrl+L</span> limpa`, "di");
+  }},
+  whoami: { d: "quem sou eu", async run() {
+    for (const [cls, t] of CONFIG.whoami) line(esc(t), cls);
+    const u = await loadUser();
+    if (u) {
+      if (u.bio) line(esc(u.bio), "mu");
+      const since = u.created_at ? `${MESES[+u.created_at.slice(5,7)-1]}/${u.created_at.slice(0,4)}` : "";
+      line(`No GitHub desde ${since} · ${u.public_repos} repositórios públicos · ${u.followers} seguidores`, "mu");
+      const bits = [u.location && `📍 ${u.location}`, u.company && `🏢 ${u.company}`].filter(Boolean);
+      if (bits.length) line(esc(bits.join("  ·  ")), "mu");
+    }
+  }},
+  contributions: { d: "gráfico de contribuições do último ano", aliases: ["contribuicoes", "contrib", "graph"], async run() {
+    const st = await loadStats();
+    if (!st) return line("não consegui carregar os dados agora, tente de novo em instantes.", "er");
+    const cal = st.calendar || [];
+    const first = new Date(cal[0].date + "T12:00:00");
+    const pad = first.getDay();
+    const cells = Array(pad).fill('<i class="no"></i>').concat(cal.map((c, i) => `<i class="l${c.level}" title="${c.count} em ${c.date.split("-").reverse().join("/")}" style="animation-delay:${Math.floor((i+pad)/7)*12}ms"></i>`));
+    block(`<div class="hm-wrap"><div class="hm">${cells.join("")}</div></div>`);
+    line(`<span class="ok b">${fmt(st.total)}</span> contribuições no último ano · ${st.active_days}/${st.total_days} dias ativos`);
+    line(`sequência atual <span class="ok b">${st.current_streak.days}</span> dias · maior sequência <span class="b">${st.longest_streak.days}</span> dias · melhor dia <span class="b">${fmt(st.best_day.count)}</span> (${brDate(st.best_day.date)})`, "mu");
+  }},
+  stats: { d: "números de sequência e contribuições", async run() {
+    const st = await loadStats();
+    if (!st) return line("não consegui carregar os dados agora.", "er");
+    const rows = [
+      ["sequência atual", `${st.current_streak.days} dias`, st.current_streak.days ? `${brDate(st.current_streak.start)} - ${brDate(st.current_streak.end)}` : ""],
+      ["maior sequência", `${st.longest_streak.days} dias`, st.longest_streak.days ? `${brDate(st.longest_streak.start)} - ${brDate(st.longest_streak.end)}` : ""],
+      ["contribuições", fmt(st.total), "no último ano"],
+      ["dias ativos", `${st.active_days} / ${st.total_days}`, `${Math.round(100*st.active_days/Math.max(1,st.total_days))}% do ano`],
+      ["melhor dia", fmt(st.best_day.count), brDate(st.best_day.date)],
+      ["média / dia ativo", String(st.avg_per_active_day).replace(".", ","), "contribuições"],
+    ];
+    block(`<div class="help">${rows.map(r => `<span class="c">${r[0]}</span><span><span class="b">${r[1]}</span> <span class="di">${r[2]}</span></span>`).join("")}</div>`);
+    const max = Math.max(1, ...st.months.map(m => m.count));
+    st.months.forEach(m => line(`<span class="mu">${m.label}</span> <span class="ok">${"█".repeat(Math.round(28 * m.count / max)) || "<span class='di'>·</span>"}</span> <span class="di">${fmt(m.count)}</span>`));
+    const g = new Date(st.generated_at);
+    line(`atualizado em ${g.toLocaleString("pt-BR")}`, "di");
+  }},
+  projects: { d: "meus repositórios públicos", aliases: ["projetos", "repos"], async run() {
+    const l = line("buscando repositórios…", "di");
+    try {
+      const repos = (await loadRepos()).filter(r => !r.name.toLowerCase().endsWith(".github.io"));
+      l.remove();
+      if (!repos.length) return line("nenhum repositório público ainda.", "mu");
+      repos.forEach(r => block(`<div class="proj"><div class="t"><a href="${r.html_url}" target="_blank" rel="noopener" class="b">${esc(r.name)}</a>${r.fork ? '<span class="di">fork</span>' : ""}${r.language ? `<span class="lang" style="--lc:${LANG_COLORS[r.language] || "#8b949e"}">${esc(r.language)}</span>` : ""}<span class="ye">★ ${r.stargazers_count}</span><span class="di">atualizado ${new Date(r.pushed_at || r.updated_at).toLocaleDateString("pt-BR")}</span></div>${r.description ? `<div class="mu">${esc(r.description)}</div>` : ""}</div>`));
+      line(`${repos.length} repositórios · <a href="${CONFIG.links.github}?tab=repositories" target="_blank" rel="noopener">ver todos no GitHub</a>`, "di");
+    } catch (e) { l.className = "ln er"; l.textContent = "a API do GitHub não respondeu agora (limite por hora), tente mais tarde."; }
+  }},
+  portrait: { d: "meu retrato em ASCII", aliases: ["foto", "retrato"], run() {
+    block(`<img class="portrait" src="miguel-ascii.svg" alt="Retrato ASCII do ${esc(CONFIG.name)}">`);
+  }},
+  social: { d: "todos os meus links", aliases: ["links", "contato", "contact"], run() {
+    const L = CONFIG.links;
+    block(`<div class="help">
+      <span class="c">github</span><a href="${L.github}" target="_blank" rel="noopener">${L.github.replace("https://","")}</a>
+      <span class="c">linkedin</span><a href="${L.linkedin}" target="_blank" rel="noopener">${L.linkedin.replace("https://www.","")}</a>
+      <span class="c">instagram</span><a href="${L.instagram}" target="_blank" rel="noopener">@${L.instagram.split("/").filter(Boolean).pop()}</a>
+      ${L.email ? `<span class="c">email</span><a href="mailto:${L.email}">${L.email}</a>` : ""}</div>`);
+  }},
+  github: { d: "abre meu GitHub", run() { openLink(CONFIG.links.github); } },
+  linkedin: { d: "abre meu LinkedIn", run() { openLink(CONFIG.links.linkedin); } },
+  instagram: { d: "abre meu Instagram", run() { openLink(CONFIG.links.instagram); } },
+  email: { d: "meu e-mail", run() { line(`<a href="mailto:${CONFIG.links.email}">${CONFIG.links.email}</a>`); } },
+  neofetch: { d: "info do sistema (versão criativa)", async run() {
+    const [st, u] = await Promise.all([loadStats(), loadUser()]);
+    const logo = "   ___________\n  / ____/__  /\n / /      / /\n/ /___   / /__\n\\____/  /____/";
+    const kv = [
+      [`${PS}`, ""], ["-".repeat(PS.length), ""],
+      ["OS", "CreativeOS 26.10 (Zona Criativa)"], ["Shell", "zsh-criativo"],
+      ["GitHub", CONFIG.login], ["Repos", u ? u.public_repos : "?"],
+      ["Contribuições", st ? fmt(st.total) : "?"], ["Sequência", st ? `${st.current_streak.days} dias` : "?"],
+      ["Tema", "dark + verde terminal"], ["Fonte", "JetBrains Mono"],
+    ];
+    const info = kv.map(([k, v], i) => i < 2 ? `<span class="${i ? "di" : "ok b"}">${esc(k)}</span>` : `<span class="ok" style="font-weight:700">${esc(k)}</span><span class="mu">:</span> ${esc(v)}`).join("\n");
+    const swatch = ["#ff7b72","#e3b341","#39d353","#22d3ee","#79c0ff","#d2a8ff","#e6edf3"].map(c => `<span style="background:${c}">   </span>`).join("");
+    block(`<div class="nf"><pre>${esc(logo)}</pre><div class="ln">${info}\n\n${swatch}</div></div>`);
+  }},
+  matrix: { d: "entra na matrix (qualquer tecla sai)", run() { startMatrix(); } },
+  banner: { d: "mostra o banner", run() { block(`<pre class="ok" style="margin:6px 0;line-height:1.22;font-size:min(13px, calc((100vw - 70px) / 79 / .6))">${esc(BANNER)}</pre>`); } },
+  date: { d: "data e hora", aliases: ["data"], run() { line(new Date().toLocaleString("pt-BR", { dateStyle: "full", timeStyle: "medium" })); } },
+  echo: { d: "repete o texto", run(args) { line(esc(args.join(" "))); } },
+  history: { d: "comandos digitados", aliases: ["historico"], run() { state.history.forEach((h, i) => line(`<span class="di">${String(i+1).padStart(3)}</span>  ${esc(h)}`)); } },
+  clear: { d: "limpa a tela", aliases: ["cls", "limpar"], run() { out.innerHTML = ""; } },
+  sudo: { hidden: true, run() { line("permissão negada: aqui só entra criatividade.", "er"); } },
+  exit: { hidden: true, aliases: ["sair", "quit"], run() { line("não dá pra sair da zona criativa ;)", "ye"); } },
+  ls: { hidden: true, run() { line(`<span class="cy">projetos/</span>  <span class="cy">ideias/</span>  <span class="cy">rascunhos/</span>  contribuicoes.sh  whoami.txt  matrix.exe`); } },
+  pwd: { hidden: true, run() { line(`/home/${CONFIG.user}/zona-criativa`); } },
+  ajuda: { hidden: true, run() { COMMANDS.help.run(); } },
+};
+const ALIASES = {};
+Object.entries(COMMANDS).forEach(([k, c]) => (c.aliases || []).forEach(a => ALIASES[a] = k));
+
+function openLink(url) { line(`abrindo <a href="${url}" target="_blank" rel="noopener">${url}</a> …`, "mu"); window.open(url, "_blank", "noopener"); }
+
+async function run(raw) {
+  const text = raw.trim();
+  echoCmd(text);
+  if (!text) return;
+  state.history.push(text); state.hidx = state.history.length;
+  const [name, ...args] = text.split(/\s+/);
+  const key = name.toLowerCase();
+  const cmd = COMMANDS[key] || COMMANDS[ALIASES[key]];
+  if (!cmd) return line(`comando não encontrado: <span class="b">${esc(name)}</span> · digite <span class="ok">help</span>`, "er");
+  input.disabled = true;
+  try { await cmd.run(args); } catch (e) { line("algo deu errado: " + esc(e.message), "er"); }
+  input.disabled = false; input.focus(); scrollDown();
+}
+
+/* ---------- input ---------- */
+input.addEventListener("keydown", e => {
+  if (e.key === "Enter") { const v = input.value; input.value = ""; run(v); }
+  else if (e.key === "ArrowUp") { if (state.hidx > 0) { state.hidx--; input.value = state.history[state.hidx]; } e.preventDefault(); }
+  else if (e.key === "ArrowDown") { if (state.hidx < state.history.length) { state.hidx++; input.value = state.history[state.hidx] || ""; } e.preventDefault(); }
+  else if (e.key === "Tab") {
+    e.preventDefault();
+    const v = input.value.trim().toLowerCase(); if (!v) return;
+    const all = Object.keys(COMMANDS).filter(k => !COMMANDS[k].hidden);
+    const m = all.filter(k => k.startsWith(v));
+    if (m.length === 1) input.value = m[0] + " ";
+    else if (m.length > 1) { echoCmd(input.value); line(m.join("   "), "mu"); }
+  }
+  else if (e.key === "l" && e.ctrlKey) { e.preventDefault(); out.innerHTML = ""; }
+});
+$("#term").addEventListener("click", e => { if (!window.getSelection().toString() && e.target.tagName !== "A") input.focus(); });
+document.querySelectorAll("[data-run]").forEach(b => b.addEventListener("click", () => { run(b.dataset.run); input.focus(); }));
+
+/* ---------- matrix ---------- */
+let matrixRAF = null;
+function startMatrix() {
+  const box = $("#matrix"), cv = box.querySelector("canvas"), ctx = cv.getContext("2d");
+  box.style.display = "block";
+  const dpr = window.devicePixelRatio || 1;
+  const fit = () => { cv.width = innerWidth * dpr; cv.height = innerHeight * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); };
+  fit();
+  const chars = "CREATIVEZONE01アイウエオカキクケコサシスセソタチツテトナニヌネノ<>/{}[]=+*".split("");
+  const fs = 16, cols = Math.ceil(innerWidth / fs);
+  const drops = Array.from({ length: cols }, () => Math.random() * -40);
+  ctx.fillStyle = "#000"; ctx.fillRect(0, 0, innerWidth, innerHeight);
+  let last = 0;
+  const draw = t => {
+    matrixRAF = requestAnimationFrame(draw);
+    if (t - last < 45) return; last = t;
+    ctx.fillStyle = "rgba(0,0,0,.08)"; ctx.fillRect(0, 0, innerWidth, innerHeight);
+    ctx.font = `${fs}px JetBrains Mono, monospace`;
+    drops.forEach((y, i) => {
+      const ch = chars[(Math.random() * chars.length) | 0];
+      ctx.fillStyle = Math.random() > .975 ? "#d9ffe0" : "#39d353";
+      ctx.fillText(ch, i * fs, y * fs);
+      if (y * fs > innerHeight && Math.random() > .975) drops[i] = 0;
+      drops[i] = y + 1;
+    });
+  };
+  matrixRAF = requestAnimationFrame(draw);
+  const stop = () => {
+    cancelAnimationFrame(matrixRAF); box.style.display = "none";
+    removeEventListener("keydown", stop, true); box.removeEventListener("click", stop); removeEventListener("resize", fit);
+    line("você saiu da matrix. bem-vindo de volta à zona criativa.", "ok"); input.focus();
+  };
+  setTimeout(() => { addEventListener("keydown", stop, true); box.addEventListener("click", stop); }, 300);
+  addEventListener("resize", fit);
+}
+
+/* ---------- boot ---------- */
+(async () => {
+  input.disabled = true;
+  await sleep(650);
+  await typeLine(`conectado a github.com/${CONFIG.login}`, "ok", 12);
+  line(`digite 'help' para ver os comandos disponíveis`, "mu");
+  const st = await loadStats();
+  renderCards(st);
+  await sleep(500);
+  echoCmd("whoami");
+  await COMMANDS.whoami.run();
+  line("");
+  input.disabled = false;
+  if (matchMedia("(pointer:fine)").matches) input.focus();
+})();
+</script>
+</body>
+</html>
